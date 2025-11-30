@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2024 AIPTU
+ * Copyright (c) 2024 - 2025 AIPTU
  *
  * For the full copyright and license information, please view
  * the LICENSE.md file that was distributed with this source code.
@@ -14,55 +14,50 @@ declare(strict_types=1);
 namespace aiptu\libplaceholder;
 
 use pocketmine\player\Player;
+use function array_key_exists;
 
-class PlaceholderContext {
+/**
+ * @phpstan-type ContextData array<string, mixed>
+ */
+final readonly class PlaceholderContext {
+	/**
+	 * @param ContextData $data
+	 */
 	public function __construct(
 		private ?Player $player = null,
 		private array $data = []
 	) {}
 
-	/**
-	 * Get the Player object, if available.
-	 *
-	 * @return Player|null the player, or null if not applicable
-	 */
 	public function getPlayer() : ?Player {
 		return $this->player;
 	}
 
 	/**
-	 * Get additional context data.
+	 * @template T
 	 *
-	 * @param string $key     the key to retrieve from context data
-	 * @param mixed  $default the default value if the key doesn't exist
+	 * @param T $default
 	 *
-	 * @return mixed the value associated with the key
+	 * @return mixed|T
 	 */
-	public function getData(string $key, $default = null) {
+	public function getData(string $key, mixed $default = null) : mixed {
 		return $this->data[$key] ?? $default;
 	}
 
 	/**
-	 * Set additional context data.
-	 *
-	 * @param string $key   the key for the data
-	 * @param mixed  $value the value to set for the key
-	 *
-	 * @return $this for chaining
+	 * @return self New instance with updated data (immutable)
 	 */
-	public function setData(string $key, $value) : self {
-		$this->data[$key] = $value;
-		return $this;
+	public function withData(string $key, mixed $value) : self {
+		return new self($this->player, [...$this->data, $key => $value]);
+	}
+
+	public function hasData(string $key) : bool {
+		return array_key_exists($key, $this->data);
 	}
 
 	/**
-	 * Check if context has a specific key.
-	 *
-	 * @param string $key the key to check for
-	 *
-	 * @return bool true if the key exists, false otherwise
+	 * @return ContextData
 	 */
-	public function hasData(string $key) : bool {
-		return isset($this->data[$key]);
+	public function getAllData() : array {
+		return $this->data;
 	}
 }

@@ -2,5 +2,5 @@ name: libplaceholder
 version: 1.0.0
 antigen: aiptu\libplaceholder
 php:
- - 8.0
+ - 8.3
 author: AIPTU
